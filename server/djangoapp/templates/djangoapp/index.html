@@ -26,19 +26,25 @@
                 <a class="nav-link" href="./contact">Contact Us</a>
             </li>
         </ul>
+
+        <div class="nav navbar-nav navbar-right">
         {% if user.is_authenticated %}
-        <div class="form-group">
-            <input class="form-control" type="text" name="username" placeholder="Username" required/>
-            <input class="form-control" type="text" name="pwd" placeholder="Password" required/>
-            <button class="btn btn-primary">Login</button>
+        <div class="form-inline">
+            <a href="/admin" style="vertical-align: middle;">({{user.username}})</a>
+            <a href="{% url 'djangoapp:logout' %}" class="btn btn-link">Logout</a>
+        </div>
+        {% else %}
+        <div class="form-inline">
+            <form action="{% url 'djangoapp:login' %}" method="post">
+                {% csrf_token %}
+                <input class="form-control" type="text" name="username" placeholder="Username" required/>
+                <input class="form-control" type="password" name="pwd" placeholder="Password" required/>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
             <button class="btn btn-link">Sign Up</button>
         </div>
-        {% else}
-        <div class="form-group">
-            <span>({{user.first_name}})</span>
-            <button class="btn btn-link">Logout</button>
-        </div>
         {% endif %}
+        </div>
     </nav>
     <!--Add a dealer table here -->
 
