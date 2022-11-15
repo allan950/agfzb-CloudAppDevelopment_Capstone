@@ -55,7 +55,7 @@ def login_request(request):
 # ...
 def logout_request(request):
     logout(request)
-    return redirect("djangoapp:logout")
+    return redirect("djangoapp:index")
 
 
 # Create a `registration_request` view to handle sign up request
@@ -70,17 +70,19 @@ def registration_request(request):
         last_name = request.POST['last_name']
         username = request.POST['username']
         password = request.POST['password']
-        print(User.objects.get(username=username, password=password))
-        print(authenticate(username, password))
-        if User.objects.get(username=username, password=password) is None:
-            User.objects.create(username=username, password=password, first_name=first_name, last_name=last_name)
-            user = authenticate(username, password)
-            if user is not None:
-                login(request, user)
-                return redirect("djangoapp:index")
-            else:
-                return render(request, 'djangoapp/registration.html', context)
+        existing_user = False
+        try:
+            User.objects.get(username=username)
+            existing_user = True
+        except:
+            logger.error("New user!")
+        
+        if not existing_user:
+            user = User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name)
+            login(request, user)
+            return redirect('djangoapp:index')
         else:
+            context['user_warn_msg'] = "Username has already been picked!"
             return render(request, 'djangoapp/registration.html', context)
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships

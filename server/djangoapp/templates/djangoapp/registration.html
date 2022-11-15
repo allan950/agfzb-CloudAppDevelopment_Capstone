@@ -8,6 +8,10 @@
     <body>
     <!--Add a registration form here -->
     <div class="container-fluid">
+    {% if user_warn_msg %}
+    <div class="alert alert-danger">{{user_warn_msg}}</div>
+    {% endif %}
+    <div class="container-fluid">
         <form action="{% url 'djangoapp:registration' %}" method="post">
             <h3>Sign Up</h3>
 
@@ -27,6 +31,7 @@
 
             <button type="submit" class="btn btn-primary">register</button>
         </form>
+    </div>
     </div>
     </body>
 </html>
