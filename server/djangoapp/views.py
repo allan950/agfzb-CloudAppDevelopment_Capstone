@@ -89,6 +89,12 @@ def registration_request(request):
 def get_dealerships(request):
     context = {}
     if request.method == "GET":
+        url = 'https://eu-gb.functions.appdomain.cloud/api/v1/web/9f382676-5b7e-4225-ae28-50d290bd7ba2/dealership/get-all-dealerships'
+        dealerships = get_dealers_from_cf(url)
+        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
+        print(dealer_names)
+        print('HELLLO')
+        #return HttpResponse(dealer_names)
         return render(request, 'djangoapp/index.html', context)
 
 
