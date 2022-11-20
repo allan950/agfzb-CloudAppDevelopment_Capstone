@@ -14,8 +14,18 @@ def get_request(url, **kwargs):
     print("GET from {} ".format(url))
     try:
         # Call get method of requests library with URL and parameters
-        response = requests.get(url, headers={'Content-Type': 'application/json'},
-                                    params=kwargs)
+        if api_key:
+            kwargs = dict()
+            kwargs["text"] = kwargs["text"]
+            kwargs["version"] = kwargs["version"]
+            kwargs["features"] = kwargs["features"]
+            kwargs["return_analyzed_text"] = kwargs["return_analyzed_text"]
+            
+            response = requests.get(url, headers={'Content-Type': 'application/json'}, auth=HTTPBasicAuth('apikey', api_key)
+                                        params=kwargs)
+        else:
+            response = requests.get(url, headers={'Content-Type': 'application/json'},
+                                        params=kwargs)
     except:
         # If any error occurs
         print("Network exception occurred")
@@ -91,7 +101,7 @@ def get_dealer_reviews_from_cf(url, **kwargs):
                 purchase = dealer_doc['purchase'],
                 purchase_date = dealer_doc['purchase_date'],
                 review = dealer_doc['review'],
-                sentiment = '')
+                sentiment = analyze_review_sentiments(dealer_doc['review']))
             result.append(dealer_obj)
     return result
 
@@ -101,6 +111,8 @@ def get_dealer_reviews_from_cf(url, **kwargs):
 # def analyze_review_sentiments(text):
 # - Call get_request() with specified arguments
 # - Get the returned sentiment label such as Positive or Negative
-
+def analyze_review_sentiments(dealerreview):
+    sentiment = get_request(url, dealerreview)
+    return sentiment
 
 
