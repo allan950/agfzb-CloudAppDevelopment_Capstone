@@ -3,6 +3,9 @@ import json
 # import related models here
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
+from ibm_watson import NaturalLanguageUnderstandingV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson.natural_language_understanding_v1 import Features, CategoriesOptions, SentimentOptions
 
 
 # Create a `get_request` to make HTTP GET requests
@@ -12,19 +15,10 @@ def get_request(url, **kwargs):
     print(kwargs)
     #kwargs = kwargs['kwargs']
     print("GET from {} ".format(url))
+    api_key = ""
     try:
         # Call get method of requests library with URL and parameters
-        if api_key:
-            kwargs = dict()
-            kwargs["text"] = kwargs["text"]
-            kwargs["version"] = kwargs["version"]
-            kwargs["features"] = kwargs["features"]
-            kwargs["return_analyzed_text"] = kwargs["return_analyzed_text"]
-            
-            response = requests.get(url, headers={'Content-Type': 'application/json'}, auth=HTTPBasicAuth('apikey', api_key)
-                                        params=kwargs)
-        else:
-            response = requests.get(url, headers={'Content-Type': 'application/json'},
+        response = requests.get(url, headers={'Content-Type': 'application/json'},
                                         params=kwargs)
     except:
         # If any error occurs
@@ -72,6 +66,12 @@ def get_dealer_by_id(url, **kwargs):
 
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
+def post_request(url, json_payload, **kwargs):
+    try:
+        request = requests.post(url, params=kwargs, json=json_payload)
+    except:
+        print("Could not proceed to treat your POST request")
+
 
 
 # Create a get_dealers_from_cf method to get dealers from a cloud function
@@ -112,7 +112,16 @@ def get_dealer_reviews_from_cf(url, **kwargs):
 # - Call get_request() with specified arguments
 # - Get the returned sentiment label such as Positive or Negative
 def analyze_review_sentiments(dealerreview):
-    sentiment = get_request(url, dealerreview)
-    return sentiment
+    url='https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/76baa39a-ec96-4582-805f-4a9fef19ca8f'
+    api_key = '2PeiWgc2h2WVomgk1KsGBJIwtvhtlOvNFofAPzGsrPBq'
+    
+    authenticator = IAMAuthenticator(api_key) 
+    natural_language_understanding = NaturalLanguageUnderstandingV1(version='2021-08-01',authenticator=authenticator) 
+    natural_language_understanding.set_service_url(url) 
+    response = natural_language_understanding.analyze( text=dealerreview ,features=Features(sentiment=SentimentOptions(targets=[dealerreview]))).get_result() 
+    label=json.dumps(response, indent=2) 
+    label = response['sentiment']['document']['label'] 
+
+    return(label)
 
 
