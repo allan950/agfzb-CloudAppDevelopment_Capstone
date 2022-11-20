@@ -23,7 +23,7 @@ class CarModel(models.Model):
         ('WN', 'WAGON')
     ]
     type = models.CharField(choices=type_choices, max_length=30)
-    year = models.IntegerField()
+    year = models.DateField()
 
     #def __str__(self):
     #    return "Make: " + self.make + ", Dealer Id: " + self.dealer_id + " Name: " + self.name + ", Type: " + self.type + ", Year: " + self.year
