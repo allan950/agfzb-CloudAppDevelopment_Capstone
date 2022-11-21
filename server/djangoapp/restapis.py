@@ -12,7 +12,8 @@ from ibm_watson.natural_language_understanding_v1 import Features, CategoriesOpt
 # e.g., response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
 #                                     auth=HTTPBasicAuth('apikey', api_key))
 def get_request(url, **kwargs):
-    print(kwargs)
+    if kwargs and kwargs['dealerId']:
+        kwargs = kwargs['dealerId']
     #kwargs = kwargs['kwargs']
     print("GET from {} ".format(url))
     api_key = ""
@@ -50,12 +51,15 @@ def get_dealers_from_cf(url, **kwargs):
 
 def get_dealer_by_id(url, **kwargs):
     result = []
-    json_result = get_request(url, dealerId=kwargs)
+    dealerId = kwargs['dealerId']
+    json_result = get_request(url, dealerId=dealerId)
     if json_result:
         dealers = json_result['result']
         for dealer in dealers:
             dealer_doc = dealer['doc']
-            if dealer_doc["id"] == dealerId:
+            strId = { "id": str(dealer_doc["id"])}
+            if strId == dealerId:
+                print(dealer_doc)
                 dealer_obj = CarDealer(address=dealer_doc["address"], city=dealer_doc["city"], full_name=dealer_doc["full_name"],
                                         id=dealer_doc["id"], lat=dealer_doc["lat"], long=dealer_doc["long"],
                                         short_name=dealer_doc["short_name"],
@@ -86,9 +90,12 @@ def post_request(url, json_payload, **kwargs):
 # - Parse JSON results into a DealerView object list
 def get_dealer_reviews_from_cf(url, **kwargs):
     result = []
-    dealerId = 15
+    dealerId = kwargs['dealerId']
     json_data = get_request(url, dealerId=dealerId)
-    if json_data:
+    
+    print(json_data)
+
+    if json_data['body']:
         dealers = json_data['body']['data']['docs']
         for dealer in dealers:
             dealer_doc = dealer
