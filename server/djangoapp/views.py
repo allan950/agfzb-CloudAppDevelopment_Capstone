@@ -144,22 +144,33 @@ def add_review(request, dealer_id):
         url = 'https://eu-gb.functions.appdomain.cloud/api/v1/web/9f382676-5b7e-4225-ae28-50d290bd7ba2/dealership/get-reviews.json'
         dealerId = {"id": str(dealer_id)}
         reviews = get_dealer_reviews_from_cf(url, dealerId=dealerId)
+        HECKBOX_MAPPING = {'on':True,
+                    'off':False,}
+        
         print(reviews)
         for i in reviews:
             print(i)
 
         #reviewNum = reviews.count()
 
+        print(cars)
         review = dict()
-        review["id"] = 1
-        review["name"] = request.POST["name"]
+        review["id"] = 6
+        #review["name"] = request.POST["name"]
         review["dealership"] = dealer_id
         review["review"] = request.POST["review"]
-        review["purchase"] = request.POST["purchase"]
+        print(CHECKBOX_MAPPING.get(request.POST["purchase"]))
+        if request.POST["purchase"] == 'on':
+            review["purchase"] = CHECKBOX_MAPPING.get(request.POST["purchase"])
         review["purchase_date"] = request.POST["purchase_date"]
-        review["car_make"] = request.POST["car_make"]
-        review["car_model"] = request.POST["car_model"]
-        review["car_year"] = request.POST["car_year"]
+        for car in cars:
+            if car.id == int(request.POST["car"]):
+                review["car_make"] = car.make.name
+                review["car_model"] = car.name
+                review["car_year"] = car.year.strftime("%Y")
+        #review["car_make"] = request.POST["car_make"]
+        #review["car_model"] = request.POST["car_model"]
+        #review["car_year"] = request.POST["car_year"]
 
         print(review)
 
