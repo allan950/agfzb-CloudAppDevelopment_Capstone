@@ -1,6 +1,61 @@
-<html>
-    <div>
-        <h6>Phone Number<h6><span></span>
-        <h6>Email<h6><span></span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dealership Review</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+    <nav class="navbar navbar-expand-sm bg-light">
+        <a class="navbar-brand" href="/djangoapp/">Dealership</a>
+
+        <ul class="navbar-nav" style="justify-content: flex-start;flex: 1;">
+            <li class="nav-item">
+                <a class="nav-link" href="/djangoapp/about">About Us</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="./contact">Contact Us</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+                <a class="nav-link" href="{% url 'djangoapp:add_review' dealer_id %}">Add Review</a>
+            </li>
+            {% endif %}
+        </ul>
+
+        <div class="nav navbar-nav navbar-right">
+        {% if user.is_authenticated %}
+        <div class="form-inline">
+            <a href="/admin" style="vertical-align: middle;">({{user.username}})</a>
+            <a href="{% url 'djangoapp:logout' %}" class="btn btn-link">Logout</a>
+        </div>
+        {% else %}
+        <div class="form-inline">
+            <form action="{% url 'djangoapp:login' %}" method="post">
+                {% csrf_token %}
+                <input class="form-control" type="text" name="username" placeholder="Username" required/>
+                <input class="form-control" type="password" name="pwd" placeholder="Password" required/>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <a class="btn btn-link" href="./registration">Sign Up</a>
+        </div>
+        {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+            <div class="card">
+                <div class="card-header">
+                  Contact Info
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title">Phone Number</h5>
+                  <p class="card-text">(480)-XXXX-XXX</p>
+                  <hr/>
+                  <h5 class="card-title">Email</h5>
+                  <p class="card-text">dealership-manager@dealership.com</p>
+                </div>
+              </div>
     </div>
 </html>
