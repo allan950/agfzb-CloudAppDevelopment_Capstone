@@ -1,5 +1,54 @@
-<html>
-    <h1>
-        Welcome to Best Cars dealership, home to the best cars in North America. We sell domestic and imported cars at reasonable prices.
-    </h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dealership Review</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+    <nav class="navbar navbar-expand-sm bg-light">
+        <a class="navbar-brand" href="/djangoapp/">Dealership</a>
+
+        <ul class="navbar-nav" style="justify-content: flex-start;flex: 1;">
+            <li class="nav-item">
+                <a class="nav-link" href="/djangoapp/about">About Us</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/djangoapp/contact">Contact Us</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+                <a class="nav-link" href="{% url 'djangoapp:add_review' dealer_id %}">Add Review</a>
+            </li>
+            {% endif %}
+        </ul>
+
+        <div class="nav navbar-nav navbar-right">
+        {% if user.is_authenticated %}
+        <div class="form-inline">
+            <a href="/admin" style="vertical-align: middle;">({{user.username}})</a>
+            <a href="{% url 'djangoapp:logout' %}" class="btn btn-link">Logout</a>
+        </div>
+        {% else %}
+        <div class="form-inline">
+            <form action="{% url 'djangoapp:login' %}" method="post">
+                {% csrf_token %}
+                <input class="form-control" type="text" name="username" placeholder="Username" required/>
+                <input class="form-control" type="password" name="pwd" placeholder="Password" required/>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <a class="btn btn-link" href="./registration">Sign Up</a>
+        </div>
+        {% endif %}
+        </div>
+    </nav>
+    <body>
+        <div class="container-fluid">
+        <h1>
+            ABOUT
+        </h1>
+        <p>Welcome to Best Cars dealership, home to the best cars in North America. We sell domestic and imported cars at reasonable prices.</p>
+    </div>
+    </body>
 </html>
