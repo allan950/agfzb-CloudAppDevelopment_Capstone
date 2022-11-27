@@ -45,11 +45,11 @@ def login_request(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect("djangoapp:login")
+            return redirect("djangoapp:index")
         else:
-            return render(request, 'djangoapp/index.html', context)
+            return redirect('djangoapp/index')
     else:
-        return render(request, 'djangoapp/index.html', context)
+        return redirect('djangoapp/index')
 
 
 # Create a `logout_request` view to handle sign out request
@@ -128,11 +128,12 @@ def get_dealer_details(request, dealer_id):
 # ...
 def add_review(request, dealer_id):
     context = {}
+    cars = CarModel.objects.filter(dealer_id=dealer_id)
+    username = request.user
     if request.method == "GET":
         dealer_url = 'https://eu-gb.functions.appdomain.cloud/api/v1/web/9f382676-5b7e-4225-ae28-50d290bd7ba2/dealership/get-all-dealerships.json'
         dealerId = {"id": str(dealer_id)}
 
-        cars = CarModel.objects.filter(dealer_id=dealer_id)
         dealer = get_dealer_by_id(dealer_url, dealerId=dealerId)
         context['cars'] = cars
         context['dealerName'] = dealer[0].full_name
@@ -144,22 +145,17 @@ def add_review(request, dealer_id):
         url = 'https://eu-gb.functions.appdomain.cloud/api/v1/web/9f382676-5b7e-4225-ae28-50d290bd7ba2/dealership/get-reviews.json'
         dealerId = {"id": str(dealer_id)}
         reviews = get_dealer_reviews_from_cf(url, dealerId=dealerId)
-        HECKBOX_MAPPING = {'on':True,
+        CHECKBOX_MAPPING = {'on':True,
                     'off':False,}
         
-        print(reviews)
         for i in reviews:
             print(i)
 
-        #reviewNum = reviews.count()
-
-        print(cars)
         review = dict()
-        review["id"] = 6
-        #review["name"] = request.POST["name"]
+        review["id"] = len(reviews) + 1
+        review["name"] = str(username)
         review["dealership"] = dealer_id
         review["review"] = request.POST["review"]
-        print(CHECKBOX_MAPPING.get(request.POST["purchase"]))
         if request.POST["purchase"] == 'on':
             review["purchase"] = CHECKBOX_MAPPING.get(request.POST["purchase"])
         review["purchase_date"] = request.POST["purchase_date"]
