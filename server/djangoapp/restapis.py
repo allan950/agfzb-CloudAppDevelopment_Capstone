@@ -73,6 +73,7 @@ def get_dealer_by_id(url, **kwargs):
 def post_request(url, json_payload, **kwargs):
     try:
         request = requests.post(url, params=kwargs, json=json_payload)
+        print(request)
     except:
         print("Could not proceed to treat your POST request")
 
